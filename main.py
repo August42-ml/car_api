@@ -1,40 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 import uvicorn
-from contextlib import asynccontextmanager
-from asyncio import create_task, CancelledError
 
-from database.connection import connect
-from routes import car, notification
+from cars.views import car_router
+from users.views import user_router
 from config import settings 
-from bot.bot import bot, dp
-from bot.handler import main_tg_router
 
+app = FastAPI()
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    #коннект с бд
-    connect()
-    
-    #запуск бота
-    dp.include_router(main_tg_router)
-    bot_task = create_task(dp.start_polling(bot))
+main_v1_router = APIRouter(prefix="/v1/api")
+main_v1_router.include_router(car_router)
+main_v1_router.include_router(user_router)
 
-    yield
-    
-    bot_task.cancel()
-    try:
-        await bot_task
-    except CancelledError:
-        pass
-
-
-app = FastAPI(lifespan=lifespan)
-app.include_router(car.car_router, prefix="/car")
-app.include_router(notification.notification_router, prefix="/notification")
-
-@app.get('/')
-async def welcome() -> dict:
-    return {"msg": "Welcome"} 
+app.include_router(main_v1_router)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host=settings.host, port=settings.port, reload=True)
