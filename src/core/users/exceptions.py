@@ -9,3 +9,6 @@ class UserPasswordError(Exception):
 
 class TokenIsInvalid(Exception):
     pass
+
+class ServiceError(Exception):
+    pass

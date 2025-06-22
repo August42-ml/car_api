@@ -2,7 +2,7 @@ from fastapi import HTTPException, Depends, status
 from functools import wraps
 
 from .dependencies import get_current_user
-from core.users.exceptions import UserAlreadyExistsError, UserDoesntExistError, UserPasswordError
+from core.users.exceptions import UserAlreadyExistsError, UserDoesntExistError, UserPasswordError, ServiceError
 
 def role_required(func):
     
@@ -19,7 +19,7 @@ def user_exceptions(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (UserPasswordError, UserDoesntExistError, UserAlreadyExistsError) as error:
+        except (UserPasswordError, UserDoesntExistError, UserAlreadyExistsError, ServiceError) as error:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(error))
     return wrapper
         

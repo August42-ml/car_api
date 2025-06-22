@@ -3,8 +3,8 @@ from jose import JWTError
 from fastapi.security import APIKeyHeader
 
 from core.users.services import user_service
-from core.users.entities import BaseUser
 from core.users.exceptions import TokenIsInvalid
+from core.users.entities import BaseUser
 
 def get_current_user(token: str = Depends(APIKeyHeader(name="auth"))) -> BaseUser:
     try:

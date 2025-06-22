@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from core.users.services import user_service
 from core.users.entities import BaseUser
-from .schemas import User
+from .schemas import UserSchema
 from .dependencies import get_current_user
 from .decorators import role_required, user_exceptions
 
@@ -10,7 +10,7 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
 
 @user_router.post("/register")
 @user_exceptions
-def register(user: User) -> dict:
+def register(user: UserSchema) -> dict:
     user_service.add(user)
     return {"msg": f"User {user.username} was registered successfully"}
 
